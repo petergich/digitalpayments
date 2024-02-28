@@ -41,6 +41,7 @@
     />
 
     <!-- Fonts -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/boxicons/2.0.7/css/boxicons.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -58,6 +59,7 @@
       href="{% static 'vendor/css/core.css' %}"
       class="template-customizer-core-css"
     />
+    
     <link
       rel="stylesheet"
       href="{% static 'vendor/css/theme-default.css' %}"
@@ -157,7 +159,7 @@
                 </svg>
               </span>
               <span class="app-brand-text demo menu-text fw-bolder ms-2"
-                >Inventory</span
+                >DIGI-PAY</span
               >
             </a>
 
@@ -174,26 +176,26 @@
           <ul class="menu-inner py-1">
             <!-- Dashboard -->
             <li class="menu-item active">
-                <a href="sellerhome" class="menu-link bg-success ">
+                <a href="sellerhome" class="menu-link">
                   <i class="menu-icon tf-icons bx bx-home-circle"></i>
                   <div data-i18n="Analytics">Home</div>
                 </a>
               </li>
               <li class="menu-item active">
-                  <a href="sell" class="menu-link bg-pink">
-                    <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                  <a href="sell" class="menu-link bg-success">
+                    <i class="menu-icon tf-icons bx bx-shopping-bag"></i>
                     <div data-i18n="Analytics">Sell</div>
                   </a>
               </li>
               <li class="menu-item active">
                   <a href="#" class="menu-link bg-pink">
-                    <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                    <i class="menu-icon tf-icons bx bx-user"></i>
                     <div data-i18n="Analytics">Profile</div>
                   </a>
               </li>
               <li class="menu-item active">
                   <a href="#" class="menu-link bg-pink">
-                    <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                    <i class="menu-icon tf-icons bx bx-log-out"></i>
                     <div data-i18n="Analytics">Logout</div>
                   </a>
               </li>
@@ -246,16 +248,21 @@
               </div>
             </div>
           </nav>
-          <div id="qrcode"></div>
-          <div class="position-relative justify-content-center" style="width:100%;height:100%;">
-            <div class=" my-div" style="position-absolute">
-            <div class="my-form">
+          <div id="qrdiv"class=""style="z-index:999;position:absolute;width:100%;height:100vh;background-color:rgba(10,10,10,0.7);display:none;">
+            <div class="card col-4 p-4 align-self-centre" style="margin-top:35vh;margin-left:auto;margin-right:auto;">
+          <div class="align-self-center mb-4"id="qrcode"></div>
+          <div class="align-self-center"><button class="btn btn-success" onclick="refresh()">Done</button></div>
+          <div class="align-self-center"><a id="link" href="#"></a></div>
+            </div>
+          </div>
+          <div class="position-relative justify-content-center" style="width:100%;height:100%;background-coid=lor:rgba(10,10,10,0.5)">
+            
+            <div id="mydiv"class="my-form card col-6 p-3 align-items-center"style="margin-top:30vh;margin-left:auto;margin-right:auto;">
                 <form onsubmit="encodeAndGenerateQRCode()">
-                    <div id="qrcode"></div>
-                    <label>
-                        Amount:
+                    <label class="">
+                        Amount
                     </label><br>
-                    <input type="number" id="amount" name="amount"required placeholder="Enter amount here">
+                    <input class="mb-4"type="number" id="amount" name="amount"required placeholder="Enter amount here">
                     <div>
                         <button type="submit" class="btn btn-success">
                             Submit
@@ -264,7 +271,7 @@
                 </form>
         </div>
         </div>
-        </div>
+        
           <!-- Content wrapper -->
         </div>
         
@@ -278,20 +285,30 @@
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
     <script>
+        function refresh(){
+          location.reload();
+        }
         function encodeAndGenerateQRCode() {
             event.preventDefault();
             var user="{{ username }}";
             var amount=document.getElementById("amount").value;
             var currentDomain = window.location.hostname;
-            const url=currentDomain+":8000/customerdebit?data="+encodeURIComponent(amount)+"&user="+encodeURIComponent(user)
+            const url= `http://${currentDomain}:8000/customerdebit?amount=${encodeURIComponent(amount)}&user=${encodeURIComponent(user)}`;
 
             const qrcodeContainer = document.getElementById("qrcode");
+            const qrdiv=document.getElementById("qrdiv")
+            qrdiv.style.display="block"
             qrcodeContainer.innerHTML='';
             new QRCode(qrcodeContainer, {
             text: url,
             width: 128,
             height: 128
           });
+          var linkElement = document.getElementById("link");
+
+        // Set the href attribute of the anchor element to the generated link
+          linkElement.href = url;
+          link.innerHTML=url;
         }
         </script>
       

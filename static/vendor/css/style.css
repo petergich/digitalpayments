@@ -1,5 +1,5 @@
 .bg-pink{
-    background-color: rgba(200, 0, 40, 0.5);
+    background-color: rgba(250, 2, 52, 0.5);
   } 
 .my-form{
     margin-left: auto;
@@ -7,4 +7,20 @@
 }
 .my-div{
     align-items: center;
+    margin-left: auto;
+    margin-right: auto;
 }
+.full-container {
+    height: 100%;
+    background-color: #f0f0f0; /* Set your desired background color */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Centered content container */
+  .centered-container {
+    text-align: center;
+  }
+
+  

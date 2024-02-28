@@ -34,12 +34,21 @@ def sell(request):
         return redirect('sellerlogin')
     
 def customerdebit(request):
-    return render(request,"customerdebit.html")     
+    if request.method=="POST":
+        user=request.POST.get("user")
+        amount=request.POST.get("amount")
+        phone=request.POST.get("phone")
+        sellerx=seller.objects.get(buss_name=user)
+        response=initiate_stk_push(amount,phone,sellerx)
+        return render(request,"customerdebit.html")
+    user=request.GET.get("user")
+    amount=request.GET.get("amount")
+    context={"user":user,"amount":amount}
+    return render(request,"customerdebit.html",context)     
 def sellerlogin(request):
     if request.method=="POST":
         bussname=request.POST.get("bussname")
         passw=request.POST.get("password")
-        print(passw,bussname)
         try:
             user=seller.objects.get(buss_name=bussname, password=passw)
             if user is not None:
@@ -54,9 +63,9 @@ def sellerlogin(request):
         except:
             return HttpResponse("invalid credentials3")
     return render(request,"sellerlogin.html")
-def get_access_token(request):
-    consumer_key = "BKmBB1FUf9w2dY8zdLYHZFu4TsQRAizF"  
-    consumer_secret = "a1GI0hpiJXVYgypP"  
+def get_access_token(seller):
+    consumer_key = seller.consumer_key  
+    consumer_secret = seller.secret_key  
     access_token_url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
     headers = {'Content-Type': 'application/json'}
     auth = (consumer_key, consumer_secret)
@@ -70,24 +79,24 @@ def get_access_token(request):
         return JsonResponse({'error': str(e)})
     
 
-def initiate_stk_push(request):
-    access_token_response = get_access_token(request)
+def initiate_stk_push(amount,phone,seller):
+    access_token_response = get_access_token(seller)
     if isinstance(access_token_response, JsonResponse):
         access_token = access_token_response.content.decode('utf-8')
         access_token_json = json.loads(access_token)
         access_token = access_token_json.get('access_token')
         if access_token:
-            amount = 1
-            phone = "254768791395"
-            passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"
-            business_short_code = '174379'
+            amount = int(amount)
+            phone = phone
+            passkey = seller.passkey
+            business_short_code = seller.buss_shortcode
             process_request_url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
             callback_url = 'https://kariukijames.com/callback'
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
             password = base64.b64encode((business_short_code + passkey + timestamp).encode()).decode()
             party_a = phone
             party_b = '254727264771'
-            account_reference = 'DIGITAL PAYMENTS'
+            account_reference = seller.buss_name
             transaction_desc = 'stkpush test'
             stk_push_headers = {
                 'Content-Type': 'application/json',

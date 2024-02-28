@@ -247,11 +247,14 @@
             </div>
           </nav>
           
-         <form>
+         <form method="POST" action="customerdebit">
+            {% csrf_token%}
         <label>
             Phone number
         </label><br>
         <input type="text" required name="phone" id="phone"><br>
+        <input style="display:none;"type="text" value="{{user}}"name="user" id="user">
+        <input style="display:none;"type="number" value="{{amount}}"name="amount" id="amount">
         <button class="btn btn-success">
             Pay
         </button>
