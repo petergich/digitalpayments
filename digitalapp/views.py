@@ -8,6 +8,10 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from .models import *
+from django.http import JsonResponse
+from django.conf import settings
+import requests
+import urllib.parse
 
 def home(request):
     return render(request,"index.html")
@@ -32,7 +36,12 @@ def sell(request):
         return render(request,"sell.html",{"username":username})
     except:
         return redirect('sellerlogin')
-    
+def customerregister(request):
+    return HttpResponse("customer registration")
+def customerlogin(request):
+    return HttpResponse("customer login")  
+def sellerregister(request):
+    return HttpResponse("seller register")
 def customerdebit(request):
     if request.method=="POST":
         user=request.POST.get("user")
@@ -191,7 +200,7 @@ def query_stk_status(request):
             return JsonResponse({'error': 'Access token not found.'})
     else:
         return JsonResponse({'error': 'Failed to retrieve access token.'})
-    def process_stk_callback(request):
+def process_stk_callback(request):
         stk_callback_response = json.loads(request.body)
         log_file = "Mpesastkresponse.json"
         with open(log_file, "a") as log:
@@ -208,5 +217,49 @@ def query_stk_status(request):
         if result_code == 0:
         #  store the transaction details in the database
             print("okay")
+def initiate_payment(request):
+    if request.method == 'POST':
+        # Collect payment details from the user
+        amount = request.POST.get('amount')
+        invoice_number = request.POST.get('invoice_number')
+        description = request.POST.get('description')
+        email = request.POST.get('email')
+        card_number = request.POST.get('card_number')
+        card_expiry = request.POST.get('card_expiry')
+        card_cvv = request.POST.get('card_cvv')
+
+        # Prepare parameters for the Pesapal API request
+        pesapal_consumer_key = settings.PESAPAL_CONSUMER_KEY
+        pesapal_consumer_secret = settings.PESAPAL_CONSUMER_SECRET
+
+        pesapal_params = {
+            'oauth_consumer_key': pesapal_consumer_key,
+            'oauth_signature_method': 'PLAINTEXT',
+            'oauth_signature': f'{pesapal_consumer_secret}&',
+            'pesapal_merchant_reference': invoice_number,
+            'pesapal_amount': amount,
+            'pesapal_currency': 'KES',  # Currency code (Kenyan Shilling)
+            'pesapal_description': description,
+            'pesapal_email': email,
+            'card_no': card_number,
+            'card_cvv': card_cvv,
+            'card_expiry': card_expiry,
+            'payment_method': 'visa',  # Specify the payment method (e.g., 'visa', 'mastercard')
+        }
+
+        # Make an API request to Pesapal to process the payment
+        pesapal_response = requests.post(
+            'https://www.pesapal.com/API/PostPesapalDirectOrderV4',
+            data=pesapal_params
+        )
+
+        # Parse the response
+        response_data = pesapal_response.text
+
+        # Return the response data as JSON
+        return JsonResponse({'response_data': response_data})
+    else:
+        # Render a form for the user to enter payment details
+        return HttpResponse("An error occured")
 
 # Create your views here.

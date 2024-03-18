@@ -26,7 +26,9 @@ SECRET_KEY = 'django-insecure-u&w2x#r=t_6h=%0hyf3$nya1(+pi!#5zsqqx-&@s%&1@cu-h-u
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
+PESAPAL_CONSUMER_KEY = 'your_pesapal_consumer_key'
+PESAPAL_CONSUMER_SECRET = 'your_pesapal_consumer_secret'
+PESAPAL_CALLBACK_URL = 'http://yourdomain.com/pesapal/callback/'
 
 # Application definition
 
