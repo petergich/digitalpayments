@@ -254,6 +254,14 @@ body iframe {
         <input type="email" name="email"required="">
         <label>Email</label>
       </div>
+      <div class="user-box">
+        <input type="text" name="phone"required="">
+        <label>Phone Number</label>
+      </div>
+      <div class="user-box">
+        <input type="text" name="registration_no"required="">
+        <label>Bussiness Registration Number</label>
+      </div>
     <div class="user-box">
       <input type="password" id="password" name="password"required="">
       <label>Password</label>
@@ -268,15 +276,20 @@ body iframe {
     <p>Already have an account?<a href="{% url "sellerlogin" %}">login</a>
   </form>
   <script>
+    var message="{{message|safe}}"
+    if(message){
+        if(message==="Succesfully registered"){
+            alert(message)
+            window.location.href="{% url "sellerlogin" %}"
+        }
+        alert(message)
+    }
     function validator() {
-        
-    
         // Get the value of the input field
         var password=document.getElementById("password").value;
         var confirm=document.getElementById("confirm").value;
         // Check the condition
        if(password===confirm){
-        alert("true")
         return true;
        }
      else {
