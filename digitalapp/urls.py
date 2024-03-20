@@ -11,4 +11,7 @@ urlpatterns = [
     path("sellerhome",views.sellerhome, name="sellerhome"),
     path("sell",views.sell, name="sell"),
     path("customerdebit",views.customerdebit,name="customerdebit"),
+    path("superadminhome",views.superadminhome,name="superadminhome"),
+    path("requestprocess",views.requestprocess,name="requestprocess"),
+    path("superadminlogin",views.superadminlogin,name="superadminlogin"),
 ]

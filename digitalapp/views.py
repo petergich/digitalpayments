@@ -14,7 +14,8 @@ import requests
 from django.contrib.auth.models import User
 import urllib.parse
 from django.contrib.auth.hashers import make_password, check_password
-
+from datetime import datetime
+from django.contrib.auth.decorators import user_passes_test
 def home(request):
     return render(request,"index.html")
 
@@ -59,9 +60,19 @@ def sellerregister(request):
             return render(request,"sellerregister.html",{"message":"A business with the phone number already exists"})
         user=seller(buss_name=buss_name,phone_number=phone,email=email,registration_number=registration_no,password=hashed_password)
         try:
-            iuser = User.objects.create_user(username='username', email='email@example.com', password='password')
+            iuser = User.objects.create_user(username=buss_name, email=email, password=password)
             iuser.save()
             user.save()
+            seler=seller.objects.get(buss_name=buss_name)
+            
+
+            # Get the current date and time
+            current_datetime = datetime.now()
+
+            # Get the current date
+            current_date = current_datetime.date()
+            regis=registration_request(seller=seler,date=current_date)
+            regis.save()
             return render(request,"sellerregister.html",{"message":"Succesfully registered"})
         except:
             return render(request,"sellerregister.html",{"message":"An error occured while trying to save you details"})
@@ -86,7 +97,7 @@ def sellerlogin(request):
         # Authenticate the user
         user = authenticate(request, username=bussname, password=passw)
         
-        if user is not None:
+        if user is not None and seller.objects.filter(buss_name=bussname).exists():
             login(request, user)
             return redirect('sellerhome')  # Redirect to the home page after successful login
         else:
@@ -94,6 +105,28 @@ def sellerlogin(request):
     
     # If it's a GET request, just render the login page
     return render(request, "sellerlogin.html")
+def is_superuser_with_staff_status(user):
+    return user.is_superuser and user.is_staff
+@login_required(login_url='superadminlogin')
+@user_passes_test(is_superuser_with_staff_status)
+def superadminhome(request):
+    return render(request,"superadminhome.html",{"context":registration_request.objects.order_by('-date')})
+def requestprocess(request):
+    return render(request,"requestprocess.html")
+def superadminlogin(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        passw = request.POST.get("password")
+        
+        # Authenticate the user
+        user = authenticate(request, username=username, password=passw)
+        
+        if user is not None and user.is_superuser and user.is_staff:
+            login(request, user)
+            return redirect('superadminhome')  # Redirect to the home page after successful login
+        else:
+            return render(request, "superadminlogin.html", {"message": "Invalid credentials"}) 
+    return render(request,"superadminlogin.html")
 def get_access_token(seller):
     consumer_key = seller.consumer_key  
     consumer_secret = seller.secret_key  

@@ -23,14 +23,16 @@ class customer(models.Model):
     cvc=models.CharField(max_length=254,null=True)
     def __str__ (self):
         return self.username
-class transactionsRecord(models.Model):
-    seller=models.ForeignKey(seller,on_delete=models.CASCADE)
-    amount=models.IntegerField(default=0)
-    time=models.DateTimeField(default=timezone.now)
 class registration_request(models.Model):
     seller=models.ForeignKey(seller,on_delete=models.CASCADE)
     date=models.DateField(default=timezone.now)
     status=models.BooleanField(default=False)
     def __str__ (self):
-        return self.seller
+        return self.seller.buss_name
+class seller_record(models.Model):
+    seller=models.ForeignKey(seller,on_delete=models.CASCADE)
+    time=models.DateField()
+    amount=models.IntegerField()
+    def __str__ (self):
+        return f"{self.seller.buss_name} - Amount: {self.amount}"
 # Create your models here.

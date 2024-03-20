@@ -156,7 +156,7 @@
                 </svg>
               </span>
               <span class="app-brand-text demo menu-text fw-bolder ms-2"
-                >DIGI-PAY</span
+                >DIGI-PAY ADMIN</span
               >
             </a>
 
@@ -181,13 +181,7 @@
             <li class="menu-item active">
                 <a href="sell" class="menu-link bg-pink">
                     <i class="menu-icon tf-icons bx bx-shopping-bag"></i>
-                  <div data-i18n="Analytics">Sell</div>
-                </a>
-            </li>
-            <li class="menu-item active">
-                <a href="#" class="menu-link bg-pink">
-                    <i class="menu-icon tf-icons bx bx-user"></i>
-                  <div data-i18n="Analytics">Profile</div>
+                  <div data-i18n="Analytics">users</div>
                 </a>
             </li>
             <li class="menu-item active">
@@ -215,7 +209,9 @@
                   <i class="bx bx-menu bx-sm"></i>
                 </a>
               </div>
+
               <img style="max-width:4%;max-height:4%"src="{% static "img/planetakeof.png" %}" alt="Logo" />
+              
               <button
                 class="navbar-toggler"
                 type="button"
@@ -245,7 +241,32 @@
             </div>
           </nav>
 
-          
+          <div class="m-4">
+            <table class=" table" style=";" >
+                <thead class="bg-info">
+                  <tr class="table-hover">
+                    <th><h5 style="color: white">Seller</h5></th>
+                    <th><h5 style="color: white">Email</h5></th>
+                    <th><h5 style="color: white">phone</h5></th>
+                    <th><h5 style="color: white">Request Date</h5></th>
+                    <th><h5 style="color: white">registration number</h5></th>
+                    <th><h5 style="color: white">Status</h5></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for request in context %}
+                  <tr style="background-color:rgb(200,200,200);cursor:pointer;">
+                    <td style="font-style:bold;color:black;">{{request.seller.buss_name}}</td>
+                    <td style="font-style:bold;color:black;">{{request.seller.email}}</td>
+                    <td style="font-style:bold;color:black;">{{request.seller.phone_number}}</td>
+                    <td style="font-style:bold;color:black;">{{request.date}}</td>
+                    <td style="font-style:bold;color:black;">{{request.seller.registration_number}}</td>
+                    <td id="{{request.id}}"style="font-style:bold;color:black;">{{request.status}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+          </div>
           <!-- Content wrapper -->
         </div>
         <!-- / Layout page -->
@@ -257,92 +278,6 @@
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
-    <script>
-      const distinctColors = [
-  "Red",
-  "Green",
-  "Blue",
-  "Yellow",
-  "Purple",
-  "Orange",
-  "Pink",
-  "Brown",
-  "Teal",
-  "Cyan",
-  "Magenta",
-  "Indigo",
-  "Maroon",
-  "Olive",
-  "Navy",
-  "Turquoise",
-  "Lavender",
-  "Gold",
-  "Silver",
-  "Black",
-  "White",
-  "Beige",
-  "Gray",
-  "Coral",
-  "Slate",
-  "Plum",
-  "Violet",
-  "Ruby",
-  "Emerald",
-  "Sapphire",
-  "Lemon",
-  "Mint",
-  "Peach",
-  "Salmon",
-  "Mauve",
-  "Periwinkle",
-  "Lilac",
-  "Rose",
-  "Tangerine",
-  "Salmon",
-  "Sapphire",
-  "Coral",
-  "Jade",
-  "Cobalt",
-  "Mahogany",
-  "Peacock",
-  "Khaki",
-  "Vanilla",
-  "Olive",
-  "Ruby",
-  "Mint",
-  "Plum",
-  "Coral",
-  "Lavender",
-  "Sunflower"
-];
-
-      var ob = {{ objects| safe}}
-      var xValues = [];
-      var yValues = [];
-      var barColors = [];
-      for (var i = 0; i < ob.length; i++) {
-        xValues.push(ob[i].company)
-        yValues.push(ob[i].frequency)
-        barColors.push(distinctColors[i])
-    }
-      new Chart("myChart", {
-        type: "bar",
-        data: {
-          labels: xValues,
-          datasets: [{
-            backgroundColor: barColors,
-            data: yValues
-          }]
-        },
-        options: {
-          legend: {display: false},
-          title: {
-            display: true,
-            text: "Companies Frequencies"
-          }
-        }
-      });
-      </script>
     <script src="{% static 'vendor/libs/jquery/jquery.js' %}"></script>
     <script src="{% static 'vendor/libs/popper/popper.js' %}"></script>
     <script src="{% static 'vendor/js/bootstrap.js' %}"></script>
