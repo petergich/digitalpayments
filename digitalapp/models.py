@@ -3,6 +3,7 @@ from django.db import models
 
 class seller(models.Model):
     buss_name=models.CharField(max_length=254,primary_key=True)
+    email=models.CharField(max_length=254,null=True)
     buss_shortcode=models.CharField(max_length=254)
     password=models.CharField(max_length=254)
     consumer_key=models.CharField(max_length=254,null=True)

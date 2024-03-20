@@ -37,11 +37,11 @@ def sell(request):
     except:
         return redirect('sellerlogin')
 def customerregister(request):
-    return HttpResponse("customer registration")
+    return render(request,"customerregister.html")
 def customerlogin(request):
-    return HttpResponse("customer login")  
+    return render(request,"customerlogin.html")  
 def sellerregister(request):
-    return HttpResponse("seller register")
+    return render(request,"sellerregister.html")
 def customerdebit(request):
     if request.method=="POST":
         user=request.POST.get("user")
