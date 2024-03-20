@@ -11,6 +11,7 @@ from .models import *
 from django.http import JsonResponse
 from django.conf import settings
 import requests
+from django.contrib.auth.models import User
 import urllib.parse
 
 def home(request):
