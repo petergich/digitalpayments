@@ -11,6 +11,7 @@ class seller(models.Model):
     consumer_key=models.CharField(max_length=254,null=True)
     secret_key=models.CharField(max_length=254,null=True)
     passkey=models.CharField(max_length=400,null=True)
+    status=models.BooleanField(default=False)
     def __str__ (self):
         return self.buss_name
 class customer(models.Model):
@@ -26,7 +27,6 @@ class customer(models.Model):
 class registration_request(models.Model):
     seller=models.ForeignKey(seller,on_delete=models.CASCADE)
     date=models.DateField(default=timezone.now)
-    status=models.BooleanField(default=False)
     def __str__ (self):
         return self.seller.buss_name
 class seller_record(models.Model):

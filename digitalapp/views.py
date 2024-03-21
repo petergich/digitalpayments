@@ -110,9 +110,31 @@ def is_superuser_with_staff_status(user):
 @login_required(login_url='superadminlogin')
 @user_passes_test(is_superuser_with_staff_status)
 def superadminhome(request):
-    return render(request,"superadminhome.html",{"context":registration_request.objects.order_by('-date')})
+    return render(request,"superadminhome.html",{"context":registration_request.objects.order_by('seller__status','-date')})
+@login_required(login_url='superadminlogin')
+@user_passes_test(is_superuser_with_staff_status)
 def requestprocess(request):
-    return render(request,"requestprocess.html")
+    if request.method=="POST":
+            scode=request.POST.get('shortcode')
+            ckey=request.POST.get('consumerkey')
+            skey=request.POST.get('secretkey')
+            pkey=request.POST.get('passkey')
+            r=registration_request.objects.get(id=request.POST.get('id'))
+            seler=r.seller
+            seler.buss_shortcode=scode
+            seler.consumer_key=ckey
+            seler.secret_key=skey
+            seler.passkey=pkey
+            seler.status=True
+            try:
+                seler.save()
+                return render(request,"requestprocess.html",{"request":registration_request.objects.get(id=request.POST.get('id')),"message":"Successfully updated"})
+            except:
+                return render(request,"requestprocess.html",{"request":registration_request.objects.get(id=request.POST.get('id')),"mmessage":"An error occured while trying to save"})
+    if "id" in request.GET:
+    
+        return render(request,"requestprocess.html",{"request":registration_request.objects.get(id=request.GET.get('id'))})
+    return redirect("superadminhome")
 def superadminlogin(request):
     if request.method == "POST":
         username = request.POST.get("username")
