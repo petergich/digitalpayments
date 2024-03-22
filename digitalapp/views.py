@@ -16,6 +16,9 @@ import urllib.parse
 from django.contrib.auth.hashers import make_password, check_password
 from datetime import datetime
 from django.contrib.auth.decorators import user_passes_test
+import time
+
+
 def home(request):
     return render(request,"index.html")
 
@@ -25,17 +28,16 @@ def sellerhome(request):
         username = request.user.username
         user=seller.objects.get(buss_name=username)
         
-        return render(request,"seller.html")
+        return render(request,"seller.html",{"user":user})
     except:
         return redirect('sellerlogin')
 @login_required(login_url='sellerlogin') 
 def sell(request):
     try:
         username = request.user.username
-        password= request.user.password
         user=seller.objects.get(buss_name=username)
         
-        return render(request,"sell.html",{"username":username})
+        return render(request,"sell.html",{"username":username,"user":user})
     except:
         return redirect('sellerlogin')
 def customerregister(request):
@@ -82,9 +84,26 @@ def customerdebit(request):
         user=request.POST.get("user")
         amount=request.POST.get("amount")
         phone=request.POST.get("phone")
-        sellerx=seller.objects.get(buss_name=user)
-        response=initiate_stk_push(amount,phone,sellerx)
-        return render(request,"customerdebit.html")
+        if amount=="" or int(amount)<1 or phone=="":
+            if request.user.is_authenticated:
+                return redirect("sell")
+            else:
+                return redirect("home")
+        try:
+            sellerx=seller.objects.get(buss_name=user)
+            response=initiate_stk_push(amount,phone,sellerx)
+            print(response.content)
+            status=query_stk_status(response,sellerx)
+            print("status",status.content)
+            if request.user.is_authenticated:
+                return redirect("sell")
+            else:
+                return redirect("home")
+        except:
+            if request.user.is_authenticated:
+                return redirect("sell")
+            else:
+                return redirect("home")
     user=request.GET.get("user")
     amount=request.GET.get("amount")
     context={"user":user,"amount":amount}
@@ -105,15 +124,19 @@ def sellerlogin(request):
     
     # If it's a GET request, just render the login page
     return render(request, "sellerlogin.html")
-def is_superuser_with_staff_status(user):
-    return user.is_superuser and user.is_staff
+# def is_superuser_with_staff_status(user):
+#     return user.is_superuser and user.is_staff
 @login_required(login_url='superadminlogin')
-@user_passes_test(is_superuser_with_staff_status)
+# @user_passes_test(is_superuser_with_staff_status)
 def superadminhome(request):
+    if not request.user.is_superuser or not request.user.is_staff:
+        return redirect('superadminlogin')
     return render(request,"superadminhome.html",{"context":registration_request.objects.order_by('seller__status','-date')})
 @login_required(login_url='superadminlogin')
-@user_passes_test(is_superuser_with_staff_status)
+#user_passes_test(is_superuser_with_staff_status)
 def requestprocess(request):
+    if not request.user.is_superuser or not request.user.is_staff:
+        return redirect('superadminlogin')
     if request.method=="POST":
             scode=request.POST.get('shortcode')
             ckey=request.POST.get('consumerkey')
@@ -121,10 +144,14 @@ def requestprocess(request):
             pkey=request.POST.get('passkey')
             r=registration_request.objects.get(id=request.POST.get('id'))
             seler=r.seller
-            seler.buss_shortcode=scode
-            seler.consumer_key=ckey
-            seler.secret_key=skey
-            seler.passkey=pkey
+            if scode!="":
+                seler.buss_shortcode=scode
+            if ckey!="":
+                seler.consumer_key=ckey
+            if skey!=skey:
+                seler.secret_key=skey
+            if pkey!=pkey:
+                seler.passkey=pkey
             seler.status=True
             try:
                 seler.save()
@@ -181,7 +208,7 @@ def initiate_stk_push(amount,phone,seller):
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
             password = base64.b64encode((business_short_code + passkey + timestamp).encode()).decode()
             party_a = phone
-            party_b = '254727264771'
+            party_b = phone
             account_reference = seller.buss_name
             transaction_desc = 'stkpush test'
             stk_push_headers = {
@@ -212,7 +239,7 @@ def initiate_stk_push(amount,phone,seller):
                 response_code = response_data['ResponseCode']
                 
                 if response_code == "0":
-                    return JsonResponse({'CheckoutRequestID': checkout_request_id, 'ResponseCode': response_code})
+                    return JsonResponse({"response": response_data})
                 else:
                     return JsonResponse({'error': 'STK push failed.'})
             except requests.exceptions.RequestException as e:
@@ -221,19 +248,25 @@ def initiate_stk_push(amount,phone,seller):
             return JsonResponse({'error': 'Access token not found.'})
     else:
         return JsonResponse({'error': 'Failed to retrieve access token.'})
-def query_stk_status(request):
-    access_token_response = get_access_token(request)
+def query_stk_status(request,seller):
+    access_token_response = get_access_token(seller)
     if isinstance(access_token_response, JsonResponse):
         access_token = access_token_response.content.decode('utf-8')
         access_token_json = json.loads(access_token)
         access_token = access_token_json.get('access_token')
         if access_token:
             query_url = 'https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query'
-            business_short_code = '174379'
+            business_short_code =seller.buss_shortcode
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-            passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"
+            passkey = seller.passkey
             password = base64.b64encode((business_short_code + passkey + timestamp).encode()).decode()
-            checkout_request_id = 'ws_CO_04072023004444401768168060'
+            response_string = request.decode('utf-8')
+
+            # Parse the JSON string into a Python dictionary
+            response_data = json.loads(response_string)
+
+            # Access the value of "CheckoutRequestID" from the nested dictionary
+            checkout_request_id = response_data['response']['CheckoutRequestID']
 
             query_headers = {
                 'Content-Type': 'application/json',
@@ -290,7 +323,7 @@ def process_stk_callback(request):
         amount = stk_callback_response['Body']['stkCallback']['CallbackMetadata']['Item'][0]['Value']
         transaction_id = stk_callback_response['Body']['stkCallback']['CallbackMetadata']['Item'][1]['Value']
         user_phone_number = stk_callback_response['Body']['stkCallback']['CallbackMetadata']['Item'][4]['Value']
-        
+        print( )
         if result_code == 0:
         #  store the transaction details in the database
             print("okay")
