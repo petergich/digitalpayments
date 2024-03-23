@@ -173,7 +173,7 @@
           <ul class="menu-inner py-1">
             <!-- Dashboard -->
             <li class="menu-item active">
-              <a href="sellerhome" class="menu-link bg-success ">
+              <a href="{% url "superadminhome" %}" class="menu-link bg-success ">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div data-i18n="Analytics">Home</div>
               </a>
@@ -226,7 +226,7 @@
               <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                   <li class="nav-item active">
-                    <a class="nav-link" href="#">Home</a>
+                    <a class="nav-link" href="{% url "superadminhome" %}">Home</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link" href="#">Services</a>

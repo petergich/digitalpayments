@@ -17,8 +17,15 @@ from django.contrib.auth.hashers import make_password, check_password
 from datetime import datetime
 from django.contrib.auth.decorators import user_passes_test
 import time
+from cryptography.fernet import Fernet
+#original_key = b'vDGYOhWgY_J4O2dz2OlfPDvG2dI5LW_GnIvXdfb4bVA='
+
+# Initialize Fernet cipher suite with the original key
+#cipher_suite = Fernet(original_key)
 
 
+
+#
 def home(request):
     return render(request,"index.html")
 
@@ -27,7 +34,6 @@ def sellerhome(request):
     try:
         username = request.user.username
         user=seller.objects.get(buss_name=username)
-        
         return render(request,"seller.html",{"user":user})
     except:
         return redirect('sellerlogin')
@@ -41,9 +47,76 @@ def sell(request):
     except:
         return redirect('sellerlogin')
 def customerregister(request):
+    if request.method=="POST":
+        username=request.POST.get('username')
+        email=request.POST.get('email')
+        password= request.POST.get('password')
+        hashed_password = make_password(password)
+        if User.objects.filter(username=username).exists():
+            return render(request,"customerregister.html",{"message":"That username is already taken"})
+        if User.objects.filter(email=email).exists():
+            return render(request,"customerregister.html",{"message":"Email is already registered "})
+        else:
+            user=User.objects.create_user(username=username, email=email, password=password)
+            customerr=customer(username=username,email=email,password=hashed_password)
+            try:
+                user.save()
+                customerr.save()
+                return render(request,"customerregister.html",{"message":"Succesfully registered"})
+            except:
+                return render(request,"customerregister.html",{"message":"An error occured while trying to save you details"})
     return render(request,"customerregister.html")
+
 def customerlogin(request):
-    return render(request,"customerlogin.html")  
+    if request.method=="POST":
+        username=request.POST.get("username")
+        password=request.POST.get("password")
+        user = authenticate(request, username=username, password=password)
+        if user is not None and customer.objects.filter(username=username).exists():
+            login(request, user)
+            return redirect('customerhome')  # Redirect to the home page after successful login
+        else:
+            return render(request, "sellerlogin.html", {"message": "Invalid credentials"})
+    return render(request,"customerlogin.html") 
+@login_required(login_url="customerlogin") 
+def customerhome(request):
+    user=request.user
+    try:
+        username = request.user.username
+        user=customer.objects.get(username=username)
+    except:
+        return redirect("customerlogin")
+    customerr=customer.objects.get(username=user.username)
+    return render(request, "customerhome.html",{"customer":customerr})
+@login_required(login_url="customerlogin") 
+def paymentinfo(request):
+    if request.method=="POST":
+        fname=request.POST.get("fname")
+        lname=request.POST.get("lname")
+        cardno=request.POST.get("cardno")
+        expiry=request.POST.get("expiry")
+        cvc=request.POST.get("cvc")
+        try:
+            user=customer.objects.get(username=request.user.username)
+            user.f_name=fname
+            user.l_name=lname
+            user.card_no=cardno
+            user.cvc=cvc
+            user.expiry=expiry
+            user.save()
+            user=customer.objects.get(username=request.user.username)
+            return render(request, "paymentinfo.html",{"customer":user,"message":"Successfully Updated"})
+        except:
+            user=customer.objects.get(username=request.user.username)
+            return render(request, "paymentinfo.html",{"customer":user,"message":"An error occured while updating your info"})
+    user=request.user
+    try:
+        username = request.user.username
+        user=customer.objects.get(username=username)
+    except:
+        return redirect("customerlogin")
+    user=customer.objects.get(username=user.username)
+    return render(request, "paymentinfo.html",{"customer":user})
 def sellerregister(request):
     if request.method=="POST":
         buss_name=request.POST.get('bussname')
@@ -52,9 +125,9 @@ def sellerregister(request):
         registration_no=request.POST.get('registration_no')
         password=request.POST.get("password")
         hashed_password = make_password(password)
-        if seller.objects.filter(buss_name=buss_name).exists():
+        if seller.objects.filter(buss_name=buss_name).exists() or customer.objects.filter(username=buss_name):
             return render(request,"sellerregister.html",{"message":"A business with the Bussiness name already exists if it's you go to the login page"})
-        if seller.objects.filter(email=email).exists():
+        if User.objects.filter(email=email).exists():
             return render(request,"sellerregister.html",{"message":"A business with the email name already exists if it's you go to the login page"})
         if seller.objects.filter(registration_number=registration_no).exists():
             return render(request,"sellerregister.html",{"message":"A business with the registration already exists "})
@@ -115,7 +188,6 @@ def sellerlogin(request):
         
         # Authenticate the user
         user = authenticate(request, username=bussname, password=passw)
-        
         if user is not None and seller.objects.filter(buss_name=bussname).exists():
             login(request, user)
             return redirect('sellerhome')  # Redirect to the home page after successful login
@@ -176,6 +248,20 @@ def superadminlogin(request):
         else:
             return render(request, "superadminlogin.html", {"message": "Invalid credentials"}) 
     return render(request,"superadminlogin.html")
+#def encrypt(number):
+ #   encrypted_text = cipher_suite.encrypt(number.encode())
+  #  return encrypted_text
+
+# Decrypt the card number when you need to use it
+#def decrypt(number):
+ #   decrypted_text = cipher_suite.decrypt(number).decode()
+ #   return decrypted_text
+
+
+
+# Usage example
+# Encrypt data before
+ # This should print the original plain text
 def get_access_token(seller):
     consumer_key = seller.consumer_key  
     consumer_secret = seller.secret_key  

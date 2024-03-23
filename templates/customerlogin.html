@@ -243,12 +243,12 @@ body iframe {
 }
 </style>
 <div class="login-box">
-  <h2>Login</h2>
-  <form action="/sellerlogin" method="POST">
+  <h2>Customer Login</h2>
+  <form action="{% url "customerlogin" %}" method="POST">
     {% csrf_token %}
     <div class="user-box">
-      <input type="text" name="bussname"required="">
-      <label>Business Name</label>
+      <input type="text" name="username"required="">
+      <label>Username</label>
     </div>
     <div class="user-box">
       <input type="password" name="password"required="">
@@ -257,6 +257,9 @@ body iframe {
     <button type="submit" style="margin-left:auto;margin-right:auto;">
       Login
     </button>
+    <div>
+      <p> Don't have have an account?<a href="{% url "customerregister" %}">Signup</a></p> 
+    </div>
   </form>
 </div>
 <style>

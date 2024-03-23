@@ -16,8 +16,9 @@ class seller(models.Model):
         return self.buss_name
 class customer(models.Model):
     username=models.CharField(max_length=254,unique=True)
-    f_name=models.CharField(max_length=254)
-    l_name=models.CharField(max_length=254)
+    f_name=models.CharField(max_length=254, null=True)
+    l_name=models.CharField(max_length=254,null=True)
+    email=models.CharField(max_length=254)
     password=models.CharField(max_length=254)
     card_no=models.CharField(max_length=254,null=True)
     expiry=models.CharField(max_length=254,null=True)
