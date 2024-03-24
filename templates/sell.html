@@ -293,7 +293,7 @@
             var user="{{ username }}";
             var amount=document.getElementById("amount").value;
             var currentDomain = window.location.hostname;
-            const url= `http://${currentDomain}:8000/customerdebit?amount=${encodeURIComponent(amount)}&user=${encodeURIComponent(user)}`;
+            const url= `http://${currentDomain}/customerdebit?amount=${encodeURIComponent(amount)}&user=${encodeURIComponent(user)}`;
 
             const qrcodeContainer = document.getElementById("qrcode");
             const qrdiv=document.getElementById("qrdiv")
