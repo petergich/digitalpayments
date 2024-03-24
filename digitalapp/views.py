@@ -290,7 +290,7 @@ def initiate_stk_push(amount,phone,seller):
             passkey = seller.passkey
             business_short_code = seller.buss_shortcode
             process_request_url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
-            callback_url = 'https://petergich40.pythonanywhere.com/callback/mpesa'
+            callback_url = 'https://https://digitalpayments.onrender.com/callback/mpesa'
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
             password = base64.b64encode((business_short_code + passkey + timestamp).encode()).decode()
             party_a = phone
@@ -412,7 +412,7 @@ def process_stk_callback(request):
         print( )
         if result_code == 0:
         #  store the transaction details in the database
-            print("okay")
+            print("okay peter")
 def initiate_payment(request):
     if request.method == 'POST':
         # Collect payment details from the user
