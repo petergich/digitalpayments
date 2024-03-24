@@ -290,7 +290,7 @@ def initiate_stk_push(amount,phone,seller):
             passkey = seller.passkey
             business_short_code = seller.buss_shortcode
             process_request_url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
-            callback_url = 'https://digitalpayments.onrender.com/mpesa/callback'
+            callback_url = 'https://digitalpayments.onrender.com/mpesa/callback/'
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
             password = base64.b64encode((business_short_code + passkey + timestamp).encode()).decode()
             party_a = phone
