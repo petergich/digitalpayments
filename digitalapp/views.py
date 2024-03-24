@@ -290,7 +290,7 @@ def initiate_stk_push(amount,phone,seller):
             passkey = seller.passkey
             business_short_code = seller.buss_shortcode
             process_request_url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
-            callback_url = 'https://https://digitalpayments.onrender.com/callback/mpesa'
+            callback_url = 'https://digitalpayments.onrender.com/callback/mpesa'
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
             password = base64.b64encode((business_short_code + passkey + timestamp).encode()).decode()
             party_a = phone
@@ -334,7 +334,8 @@ def initiate_stk_push(amount,phone,seller):
             return JsonResponse({'error': 'Access token not found.'})
     else:
         return JsonResponse({'error': 'Failed to retrieve access token.'})
-def query_stk_status(request,seller):
+def query_stk_status(request):
+    
     access_token_response = get_access_token(seller)
     if isinstance(access_token_response, JsonResponse):
         access_token = access_token_response.content.decode('utf-8')
@@ -397,6 +398,7 @@ def query_stk_status(request,seller):
     else:
         return JsonResponse({'error': 'Failed to retrieve access token.'})
 def process_stk_callback(request):
+        print("called")
         stk_callback_response = json.loads(request.body)
         log_file = "Mpesastkresponse.json"
         with open(log_file, "a") as log:
