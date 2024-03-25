@@ -267,7 +267,7 @@ def get_access_token(seller):
     consumer_secret = seller.secret_key  
     access_token_url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
     headers = {'Content-Type': 'application/json'}
-    referrer_url = "https://digitalpayments.onrender.com"
+    referrer_url = "https://digitalpayments.onrender.com/"
     auth = (consumer_key, consumer_secret)
     try:
         response = requests.get(access_token_url, headers={"Referer": referrer_url}, auth=auth)
@@ -291,7 +291,7 @@ def initiate_stk_push(amount,phone,seller):
             passkey = seller.passkey
             business_short_code = seller.buss_shortcode
             process_request_url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
-            callback_url = 'https://digitalpayments.onrender.com/mpesa/callback/'
+            callback_url = 'https://digitalpayments.onrender.com//mpesa/callback/'
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
             password = base64.b64encode((business_short_code + passkey + timestamp).encode()).decode()
             party_a = phone
@@ -399,6 +399,7 @@ def query_stk_status(request,seller):
     else:
         return JsonResponse({'error': 'Failed to retrieve access token.'})
 def process_stk_callback(request):
+
         print("called")
         stk_callback_response = json.loads(request.body)
         log_file = "Mpesastkresponse.json"
@@ -459,5 +460,6 @@ def initiate_payment(request):
     else:
         # Render a form for the user to enter payment details
         return HttpResponse("An error occured")
-
+def pesapalcallback(request):
+    print("called")
 # Create your views here.

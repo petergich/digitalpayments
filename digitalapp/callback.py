@@ -2,6 +2,7 @@ import json
 from django.http import JsonResponse
 
 def process_stk_callback(request):
+    print("here")
     stk_callback_response = json.loads(request.body)
     log_file = "Mpesastkresponse.json"
     with open(log_file, "a") as log:

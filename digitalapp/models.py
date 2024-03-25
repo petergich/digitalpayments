@@ -36,4 +36,8 @@ class seller_record(models.Model):
     amount=models.IntegerField()
     def __str__ (self):
         return f"{self.seller.buss_name} - Amount: {self.amount}"
+class sucesstrial(models.Model):
+    name=models.CharField(max_length=254),
+    def __str__ (self):
+        return self.name
 # Create your models here.

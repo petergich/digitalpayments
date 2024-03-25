@@ -2,6 +2,7 @@ from django.urls import path, include
 from . import views
 urlpatterns = [
     path("",views.home,name="home"),
+    path('pesapal/callback',views.pesapalcallback,name="pesapalcallback"),
     path('mpesa/callback/', views.process_stk_callback,name="status"),
     path('accesstoken/', views.get_access_token, name='get_access_token'),
     path('query/', views.query_stk_status, name='query_stk_status'),

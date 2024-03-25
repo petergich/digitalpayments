@@ -31,7 +31,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 PESAPAL_CONSUMER_KEY = ' qkio1BGGYAXTu2JOfm7XSXNruoZsrqEW'
 PESAPAL_CONSUMER_SECRET = 'osGQ364R49cXKeOYSpaOnT++rHs='
-PESAPAL_CALLBACK_URL = 'http://yourdomain.com/pesapal/callback/'
+PESAPAL_CALLBACK_URL = 'https://https://e03b-102-0-5-242.ngrok-free.app/pesapal/callback/'
 
 # Application definition
 
@@ -58,7 +58,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'digitalpayments.urls'
 CSRF_TRUSTED_ORIGINS = [
-     'https://69c0-102-0-5-242.ngrok-free.app'
+     'https://e03b-102-0-5-242.ngrok-free.app'
     # Add any other trusted origins here if needed
 ]
 TEMPLATES = [
