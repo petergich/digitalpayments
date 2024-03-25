@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-u&w2x#r=t_6h=%0hyf3$nya1(+pi!#5zsqqx-&@s%&1@cu-h-u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [".vercel.app"]
 PESAPAL_CONSUMER_KEY = ' qkio1BGGYAXTu2JOfm7XSXNruoZsrqEW'
 PESAPAL_CONSUMER_SECRET = 'osGQ364R49cXKeOYSpaOnT++rHs='
 PESAPAL_CALLBACK_URL = 'https://https://e03b-102-0-5-242.ngrok-free.app/pesapal/callback/'
