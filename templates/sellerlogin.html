@@ -249,7 +249,7 @@ body iframe {
 }
 </script>
 <div class="login-box">
-  <h2>Login</h2>
+  <h2>Seller Login</h2>
   <form action="/sellerlogin" method="POST">
     {% csrf_token %}
     <div class="user-box">
@@ -263,7 +263,7 @@ body iframe {
     <button type="submit" style="margin-left:auto;margin-right:auto;">
       Login
     </button>
-    <p>don have an account?<a href="{% url "sellerregister"%}">Signup</a></p>
+    <p>don't have an account?<a href="{% url "sellerregister"%}">Signup</a></p>
   </form>
 </div>
 <style>
