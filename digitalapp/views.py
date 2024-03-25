@@ -267,9 +267,10 @@ def get_access_token(seller):
     consumer_secret = seller.secret_key  
     access_token_url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
     headers = {'Content-Type': 'application/json'}
+    referrer_url = "https://digitalpayments.onrender.com"
     auth = (consumer_key, consumer_secret)
     try:
-        response = requests.get(access_token_url, headers=headers, auth=auth)
+        response = requests.get(access_token_url, headers={"Referer": referrer_url}, auth=auth)
         response.raise_for_status() 
         result = response.json()
         access_token = result['access_token']
@@ -334,7 +335,7 @@ def initiate_stk_push(amount,phone,seller):
             return JsonResponse({'error': 'Access token not found.'})
     else:
         return JsonResponse({'error': 'Failed to retrieve access token.'})
-def query_stk_status(request):
+def query_stk_status(request,seller):
     
     access_token_response = get_access_token(seller)
     if isinstance(access_token_response, JsonResponse):
@@ -411,7 +412,6 @@ def process_stk_callback(request):
         amount = stk_callback_response['Body']['stkCallback']['CallbackMetadata']['Item'][0]['Value']
         transaction_id = stk_callback_response['Body']['stkCallback']['CallbackMetadata']['Item'][1]['Value']
         user_phone_number = stk_callback_response['Body']['stkCallback']['CallbackMetadata']['Item'][4]['Value']
-        print( )
         if result_code == 0:
         #  store the transaction details in the database
             print("okay peter")
