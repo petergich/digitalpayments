@@ -42,7 +42,8 @@ def sell(request):
     try:
         username = request.user.username
         user=seller.objects.get(buss_name=username)
-        
+        if not user.status:
+            return redirect("sellerhome")
         return render(request,"sell.html",{"username":username,"user":user})
     except:
         return redirect('sellerlogin')
@@ -267,7 +268,7 @@ def get_access_token(seller):
     consumer_secret = seller.secret_key  
     access_token_url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
     headers = {'Content-Type': 'application/json'}
-    referrer_url = "https://digitalpayments.onrender.com/"
+    referrer_url = "https://acb67c68317526e725aea3040a770fc0.serveo.net/"
     auth = (consumer_key, consumer_secret)
     try:
         response = requests.get(access_token_url, headers={"Referer": referrer_url}, auth=auth)
@@ -291,7 +292,7 @@ def initiate_stk_push(amount,phone,seller):
             passkey = seller.passkey
             business_short_code = seller.buss_shortcode
             process_request_url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
-            callback_url = 'https://digitalpayments.onrender.com//mpesa/callback/'
+            callback_url = 'https://acb67c68317526e725aea3040a770fc0.serveo.net//mpesa/callback/'
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
             password = base64.b64encode((business_short_code + passkey + timestamp).encode()).decode()
             party_a = phone
